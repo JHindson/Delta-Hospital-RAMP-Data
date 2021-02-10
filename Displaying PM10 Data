@@ -1,0 +1,60 @@
+# Delta-Hospital-RAMP-Data
+
+# Clear Console
+rm(list=ls())
+
+library(ggplot2)
+library(flipTime) # this is useful for converting str to date/time
+library(openair)
+
+#Import the Data file
+Data1005 <- read.table("C:/Users/jhind/Desktop/Air Quality R/R Surya Meetings/Practice Data/2020-12-07-1005.txt", sep=",")
+Data1008 <- read.table("C:/Users/jhind/Desktop/Air Quality R/R Surya Meetings/Practice Data/2020-12-07-1008.txt", sep=",")
+Data1010 <- read.table("C:/Users/jhind/Desktop/Air Quality R/R Surya Meetings/Practice Data/2020-12-07-1010.txt", sep=",")
+Data1039 <- read.table("C:/Users/jhind/Desktop/Air Quality R/R Surya Meetings/Practice Data/2020-12-07-1039.txt", sep=",")
+Data1040 <- read.table("C:/Users/jhind/Desktop/Air Quality R/R Surya Meetings/Practice Data/2020-12-07-1040.txt", sep=",")
+
+# Removal of columns not currently interested in
+
+df1005 <- Data1005[ -c(1,3,5,7,9,11,13,15,17,19,21,23:52) ]
+df1008 <- Data1008[ -c(1,3,5,7,9,11,13,15,17,19,21,23:52) ]
+df1010 <- Data1010[ -c(1,3,5,7,9,11,13,15,17,19,21,23:52) ]
+df1039 <- Data1039[ -c(1,3,5,7,9,11,13,15,17,19,21,23:52) ]
+df1040 <- Data1040[ -c(1,3,5,7,9,11,13,15,17,19,21,23:52) ]
+
+# Rename column headings
+
+colnames(df1005)<- c("Time","CO","NO","NO2","O3","CO2","Temp","RH","PM1.0","PM2.5","PM10")
+colnames(df1008)<- c("Time","CO","NO","NO2","O3","CO2","Temp","RH","PM1.0","PM2.5","PM10")
+colnames(df1010)<- c("Time","CO","NO","NO2","O3","CO2","Temp","RH","PM1.0","PM2.5","PM10")
+colnames(df1039)<- c("Time","CO","NO","NO2","O3","CO2","Temp","RH","PM1.0","PM2.5","PM10")
+colnames(df1040)<- c("Time","CO","NO","NO2","O3","CO2","Temp","RH","PM1.0","PM2.5","PM10")
+
+# use strptime to convert char format to date time format
+df1005$Time <- AsDateTime(df1005$Time, on.parse.failure = "warn")
+df1008$Time <- AsDateTime(df1008$Time, on.parse.failure = "warn")
+df1010$Time <- AsDateTime(df1010$Time, on.parse.failure = "warn")
+df1039$Time <- AsDateTime(df1039$Time, on.parse.failure = "warn")
+df1040$Time <- AsDateTime(df1040$Time, on.parse.failure = "warn")
+
+#isolate only PM10 values to plot
+
+PM10df1005 <- df1005[-c(2,3,4,5,6,7,8,9,10)]
+PM10df1008 <- df1008[-c(2,3,4,5,6,7,8,9,10)]
+PM10df1010 <- df1010[-c(2,3,4,5,6,7,8,9,10)]
+PM10df1039 <- df1039[-c(2,3,4,5,6,7,8,9,10)]
+PM10df1040 <- df1040[-c(2,3,4,5,6,7,8,9,10)]
+
+#plotting sensors on one graph
+
+ggplot()+
+  geom_line(data=PM10df1005,aes(y=PM10,x= Time,colour="darkblue"),size=1, group=1 )+
+  geom_line(data=PM10df1008,aes(y=PM10,x= Time,colour="red"),size=1, group=1) +
+  geom_line(data=PM10df1010,aes(y=PM10,x= Time,colour="green"),size=1, group=1) +
+  geom_line(data=PM10df1039,aes(y=PM10,x= Time,colour="purple"),size=1, group=1) +
+  geom_line(data=PM10df1040,aes(y=PM10,x= Time,colour="yellow"),size=1, group=1) +
+  scale_color_discrete(name = "Sensor Number", labels = c("1005", "1008","1010","1039","1040")) +
+  scale_y_discrete(limit = c(0, 100,200,300,400,500,600,700,800,900,1000,1250,1500,2000,2500,3000)) +
+  ggtitle('Concentration of PM10 (µg/m3) over time') + xlab('Time') + ylab('PM10 Concentration (µg/m3)') +
+  theme(axis.line = element_line(color = 'black')) +
+  theme(legend.position = "top")
